@@ -1,0 +1,15 @@
+{
+   "//": "To install package: npm install pakage-name -w folder-name",
+   "name": "new-folder-monorepo",
+   "private": true,
+   "workspaces": [
+      "backend",
+      "frontend"
+   ],
+   "scripts": {
+     "dev": "concurrently \"npm:dev --workspace backend\" \"npm:dev --workspace frontend\" -n \"BACKEND,FRONTEND\" -c \"yellow,cyan\""
+   },
+   "devDependencies": {
+      "concurrently": "^9.2.0"
+   }
+}
