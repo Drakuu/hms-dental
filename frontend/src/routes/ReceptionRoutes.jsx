@@ -9,6 +9,9 @@ import {
   OpdRefundDetail,
   Expenses,
   Summary,
+  DentalProcedure,
+  SkinProcedure,
+  EyesProcedure,
 } from '../pages/reception/ReceptionPages';
 import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 import DynamicLayout from '../layouts/DynamicLayout';
@@ -44,6 +47,11 @@ const ReceptionRoutes = () => {
 
           {/* Summary */}
           <Route path="summary" element={<Summary />} />
+
+{/* Procedures */}
+          <Route path="dental-procedure" element={<DentalProcedure />} />
+          <Route path="skin-procedure" element={<SkinProcedure />} />
+          <Route path="eyes-procedure" element={<EyesProcedure />} />
         </Route>
       </Route>
     </Routes>

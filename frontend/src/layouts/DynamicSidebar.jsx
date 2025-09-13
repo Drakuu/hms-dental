@@ -124,47 +124,47 @@ const DynamicSidebar = ({ userRole, isOpen, toggleSidebar }) => {
       },
 
     ],
-    // doctor: [
-    //   {
-    //     name: "Dashboard",
-    //     icon: <DashboardIcon className="text-lg" />,
-    //     links: [{ href: "dashboard", label: "Dashboard" }],
-    //   },
-    //   {
-    //     name: "My Appointments",
-    //     icon: <AppointmentsIcon className="text-lg" />,
-    //     links: [
-    //       { href: 'book-appointments', label: 'My Appointments' }
-    //     ]
-    //   },
-    //   {
-    //     name: "Patient Records",
-    //     icon: <PatientRecordIcon className="text-lg" />,
-    //     links: [{ href: "patient-records", label: "Patient Records" }],
-    //   },
-    //   {
-    //     name: "Prescriptions",
-    //     icon: <PrescriptionIcon className="text-lg" />,
-    //     links: [{ href: "prescriptions", label: "Prescriptions" }],
-    //   },
-    //   {
-    //     name: "Reports",
-    //     icon: <ReportIcon className="text-lg" />,
-    //     links: [{ href: "reports", label: "Reports" }],
-    //   },
-    //   {
-    //     name: "Notes / Diagnosis",
-    //     icon: <NotesIcon className="text-lg" />,
-    //     links: [{ href: "notes", label: "Notes / Diagnosis" }],
-    //   },
+    doctor: [
+      {
+        name: "Dashboard",
+        icon: <DashboardIcon className="text-lg" />,
+        links: [{ href: "dashboard", label: "Dashboard" }],
+      },
+      {
+        name: "My Appointments",
+        icon: <AppointmentsIcon className="text-lg" />,
+        links: [
+          { href: 'book-appointments', label: 'My Appointments' }
+        ]
+      },
+      {
+        name: "Patient Records",
+        icon: <PatientRecordIcon className="text-lg" />,
+        links: [{ href: "patient-records", label: "Patient Records" }],
+      },
+      {
+        name: "Prescriptions",
+        icon: <PrescriptionIcon className="text-lg" />,
+        links: [{ href: "prescriptions", label: "Prescriptions" }],
+      },
+      {
+        name: "Reports",
+        icon: <ReportIcon className="text-lg" />,
+        links: [{ href: "reports", label: "Reports" }],
+      },
+      {
+        name: "Notes / Diagnosis",
+        icon: <NotesIcon className="text-lg" />,
+        links: [{ href: "notes", label: "Notes / Diagnosis" }],
+      },
 
-    //   {
-    //     name: "Settings",
-    //     icon: <SettingsIcon className="text-lg" />,
-    //     links: [{ href: "settings", label: "Settings" }],
-    //   },
+      {
+        name: "Settings",
+        icon: <SettingsIcon className="text-lg" />,
+        links: [{ href: "settings", label: "Settings" }],
+      },
 
-    // ],
+    ], 
     receptionist: [
       {
         name: "Dashboards",
@@ -190,9 +190,9 @@ const DynamicSidebar = ({ userRole, isOpen, toggleSidebar }) => {
         name: "Procedure",
         icon: <OTIcon className="text-lg" />,
         links: [
-          { href: "dental", label: "Dental Procedure" },
-          { href: "skin", label: "Skin Procedure" },
-          { href: "eyes", label: "Eyes Procedure" }
+          { href: "dental-procedure", label: "Dental Procedure" },
+          { href: "skin-procedure", label: "Skin Procedure" },
+          { href: "eyes-procedure", label: "Eyes Procedure" }
         ],
       },
       {

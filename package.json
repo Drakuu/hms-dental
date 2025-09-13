@@ -7,7 +7,7 @@
       "frontend"
    ],
    "scripts": {
-     "dev": "concurrently \"npm:dev --workspace backend\" \"npm:dev --workspace frontend\" -n \"BACKEND,FRONTEND\" -c \"yellow,cyan\""
+     "dev": "concurrently \"npm:dev --workspace backend\" \"npm:dev --workspace frontend\" -n \"B,F\" -c \"yellow,cyan\""
    },
    "devDependencies": {
       "concurrently": "^9.2.0"

@@ -12,10 +12,17 @@ import PatientAppointment from './appointment/PatientAppointment';
 import RefundManagement from './refund/AddRefund';
 import OpdRefundList from './refund/OpdRefundList';
 import OpdRefundDetail from './refund/RefundDeatil';
+
+// Summary
 import Summary from "./summary/Summary"
 
 // Expenses 
 import Expenses from "./Expenses/expenses"
+
+// Procedures
+import DentalProcedure from './procedures/dental/DentalProcedure';
+import SkinProcedure from './procedures/skin/SkinProcedure';
+import EyesProcedure from './procedures/eyes/Eyes';
 
 export {
   AdminDashboard,
@@ -27,4 +34,8 @@ export {
   OpdRefundDetail,
   Expenses,
   Summary,
+  DentalProcedure,
+  SkinProcedure,
+  EyesProcedure,
+  
 };
