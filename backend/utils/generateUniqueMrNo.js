@@ -1,8 +1,11 @@
-const hospitalModel = require("../models/index.model");
+// utils / generateUniqueMrNo.js
+
 const crypto = require('crypto');
 
 async function generateUniqueMrNo(appointmentDate) {
   try {
+    const hospitalModel = require("../models/index.model");
+
     const dateObj = appointmentDate ? new Date(appointmentDate) : new Date();
     const day = String(dateObj.getDate()).padStart(2, '0');
     const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -28,10 +31,14 @@ async function generateUniqueMrNo(appointmentDate) {
 
       // Check across all collections for uniqueness
       const [appointmentExists, patientExists, patientTestExists, radiologyReportExists] = await Promise.all([
+        // Appointment model
         hospitalModel.Appointment.findOne({ appointmentMRNO: mrNoToCheck }).select('_id'),
+        // opd model
         hospitalModel.Patient.findOne({ patient_MRNo: mrNoToCheck }).select('_id'),
-        hospitalModel.PatientTest.findOne({ "patient_Detail.patient_MRNo": mrNoToCheck }).select('_id'),
-        hospitalModel.RadiologyReport.findOne({ patientMRNO: mrNoToCheck }).select('_id')
+        // lab model
+        // hospitalModel.PatientTest.findOne({ "patient_Detail.patient_MRNo": mrNoToCheck }).select('_id'),
+        // RadiologyReport model
+        // hospitalModel.RadiologyReport.findOne({ patientMRNO: mrNoToCheck }).select('_id')
       ]);
 
       isUnique = !appointmentExists && !patientExists && !patientTestExists && !radiologyReportExists;
@@ -45,10 +52,14 @@ async function generateUniqueMrNo(appointmentDate) {
       // One final check for the fallback
       const mrNoToCheck = `${datePrefix}-${randomSuffix}`;
       const [appointmentExists, patientExists, patientTestExists, radiologyReportExists] = await Promise.all([
+        // Appointment model
         hospitalModel.Appointment.findOne({ appointmentMRNO: mrNoToCheck }).select('_id'),
+        // Patient model
         hospitalModel.Patient.findOne({ patient_MRNo: mrNoToCheck }).select('_id'),
-        hospitalModel.PatientTest.findOne({ "patient_Detail.patient_MRNo": mrNoToCheck }).select('_id'),
-        hospitalModel.RadiologyReport.findOne({ patientMRNO: mrNoToCheck }).select('_id')
+        // lab model
+        // hospitalModel.PatientTest.findOne({ "patient_Detail.patient_MRNo": mrNoToCheck }).select('_id'),
+        // RadiologyReport model
+        // hospitalModel.RadiologyReport.findOne({ patientMRNO: mrNoToCheck }).select('_id')
       ]);
 
       if (appointmentExists || patientExists || patientTestExists || radiologyReportExists) {
@@ -68,12 +79,16 @@ async function generateUniqueMrNo(appointmentDate) {
 }
 
 // Helper function to get total document count
-async function getTotalDocumentCount(datePrefix) {
+async function getTotalDocumentCount(datePrefix, hospitalModel) {
   const [appointmentCount, patientCount, patientTestCount, radiologyReportCount] = await Promise.all([
+    // Appointment model
     hospitalModel.Appointment.countDocuments({ appointmentMRNO: new RegExp(`^${datePrefix}-`) }),
+    // Patient model
     hospitalModel.Patient.countDocuments({ patient_MRNo: new RegExp(`^${datePrefix}-`) }),
-    hospitalModel.PatientTest.countDocuments({ "patient_Detail.patient_MRNo": new RegExp(`^${datePrefix}-`) }),
-    hospitalModel.RadiologyReport.countDocuments({ patientMRNO: new RegExp(`^${datePrefix}-`) })
+    // lab model
+    // hospitalModel.PatientTest.countDocuments({ "patient_Detail.patient_MRNo": new RegExp(`^${datePrefix}-`) }),
+    // RadiologyReport model
+    // hospitalModel.RadiologyReport.countDocuments({ patientMRNO: new RegExp(`^${datePrefix}-`) })
   ]);
 
   return appointmentCount + patientCount + patientTestCount + radiologyReportCount;

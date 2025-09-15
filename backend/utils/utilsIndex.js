@@ -1,10 +1,13 @@
+// utils/utilsIndex.js
+
 const generateUniqueUserId = require("./generateUniqueUserId.utils");
 const generateUniqueDoctorId = require("./generateUniqueDoctorId");
 const generateUniqueMrNo = require("./generateUniqueMrNo");  
 const generateUniqueAdmissionNo = require("./generaetUniqueAdmissionNo");
 const generateUniqueToken = require("./generateUniqueToken");
 const generateUniqueId = require("./generateUniqueId");
-const generateUniqueStaffId = require("./generateUniqueStaffId")
+const generateUniqueStaffId = require("./generateUniqueStaffId");
+const generateDepartmentToken =require("./generateDepartmentToken")
 
 const utils = {
   generateUniqueUserId,
@@ -14,6 +17,7 @@ const utils = {
   generateUniqueToken,
   generateUniqueId,
   generateUniqueStaffId,
+  generateDepartmentToken,
   
 };
 

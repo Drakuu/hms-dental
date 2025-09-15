@@ -109,7 +109,7 @@ const PrintA4 = ({ formData }) => {
               padding: 5mm;
               color: #333;
               width: 190mm;
-              height: 277mm;
+              height: 297mm;
               position: relative;
               font-size: 13px;
               line-height: 1.3;
@@ -214,7 +214,7 @@ const PrintA4 = ({ formData }) => {
             }
 
             .main-content-area {
-              height: 190mm;
+              height: 210mm;
               margin-top: 3mm;
               padding: 3mm;
               position: relative;

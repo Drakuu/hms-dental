@@ -1,11 +1,12 @@
 const User = require("./user.model");
 const Doctor = require("./doctor.model");
 const Patient = require("./patient.model");
-const staff = require("./staff.model")
-const Department = require("./department.model")
-const counter = require("./counter.model")
-const Staff = require('./staff.model')
-const Refund = require("./refundopd.model")
+const staff = require("./staff.model");
+const Department = require("./department.model");
+const counter = require("./counter.model");
+const Refund = require("./refundopd.model");
+const Appointment = require("./appointment.model");
+const Procedure = require("./procedure.model")
 
 const Hospital = {
     User,
@@ -15,7 +16,8 @@ const Hospital = {
     Department,
     counter,
     Refund,
-    Staff,
+    Appointment,
+    Procedure,
 };
 
 module.exports = Hospital;

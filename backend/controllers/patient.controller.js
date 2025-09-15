@@ -1,3 +1,5 @@
+// patient.controller.js
+
 const hospitalModel = require("../models/index.model");
 const utils = require("../utils/utilsIndex");
 

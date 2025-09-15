@@ -8,8 +8,8 @@ const staff=require("./staff.route");
 const Department = require("./departments.route");
 const Refund = require("./refundOpd.route");  
 const expenses = require("./expenses.route");
-const summary = require("./summary.route")
-
+const summary = require("./summary.route");
+const Procedure =require("./procedure.route");
 
 router.use("/user", user);
 router.use("/doctor", doctor);
@@ -20,6 +20,7 @@ router.use("/departments",Department);
 router.use("/refund",Refund);
 router.use("/expense", expenses);
 router.use("/summary", summary);
+router.use("/procedure", Procedure);
 
 
 module.exports = router;
