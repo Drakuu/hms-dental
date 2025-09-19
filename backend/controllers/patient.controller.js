@@ -79,7 +79,7 @@ const createPatient = async (req, res) => {
       patient_Address,
       patient_BloodType,
       patient_MaritalStatus,
-      visitData // Required for both new and existing patients
+      visitData
     } = req.body;
 
     let doctor = null;
@@ -98,7 +98,7 @@ const createPatient = async (req, res) => {
     }
 
     const currentDate = new Date();
-    const token = await utils.generateUniqueToken(currentDate.toISOString().split('T')[0]);
+    const tokenData = await utils.generateOPDToken(visitData.doctor, currentDate);
 
     // Calculate visit details
     const discount = visitData?.discount || 0;
@@ -126,79 +126,50 @@ const createPatient = async (req, res) => {
       // VCO field
       verbalConsentObtained: visitData?.verbalConsentObtained || false,
 
-      token: token,
+      token: tokenData.token,
       referredBy: visitData?.referredBy || "",
       notes: visitData?.notes || ""
     };
 
     let patient;
 
-    // Check if patient already exists by MR Number, Contact, or CNIC
-    const existingPatientQuery = {
-      deleted: false,
-      $or: []
-    };
-
-    // Add search conditions only if values are provided
+    // ONLY search by MR Number for existing patients
     if (patient_MRNo) {
-      existingPatientQuery.$or.push({ patient_MRNo });
-    }
-    if (patient_ContactNo) {
-      existingPatientQuery.$or.push({ patient_ContactNo });
-    }
-    if (patient_CNIC) {
-      existingPatientQuery.$or.push({ patient_CNIC });
-    }
-
-    // Only search if we have at least one identifier
-    if (existingPatientQuery.$or.length > 0) {
-      patient = await hospitalModel.Patient.findOne(existingPatientQuery);
+      patient = await hospitalModel.Patient.findOne({
+        patient_MRNo,
+        deleted: false
+      });
 
       if (patient) {
-        // Check for conflicting information if patient is found
+        // Check for conflicting information if patient is found by MR number
         let updateConflicts = [];
 
+        // Only check MR number conflict (other fields can be updated)
         if (patient_MRNo && patient.patient_MRNo !== patient_MRNo) {
           updateConflicts.push(`MR Number: existing (${patient.patient_MRNo}) vs new (${patient_MRNo})`);
         }
-        if (patient_ContactNo && patient.patient_ContactNo !== patient_ContactNo) {
-          updateConflicts.push(`Contact: existing (${patient.patient_ContactNo}) vs new (${patient_ContactNo})`);
-        }
-        if (patient_CNIC && patient.patient_CNIC !== patient_CNIC) {
-          updateConflicts.push(`CNIC: existing (${patient.patient_CNIC}) vs new (${patient_CNIC})`);
-        }
 
-        // If there are conflicts, return error unless it's just updating empty fields
+        // If there are conflicts, return error
         if (updateConflicts.length > 0) {
-          const canUpdate = updateConflicts.every(conflict => {
-            // Allow updating if existing field is empty and new field has value
-            if (conflict.includes('MR Number') && !patient.patient_MRNo && patient_MRNo) return true;
-            if (conflict.includes('Contact') && !patient.patient_ContactNo && patient_ContactNo) return true;
-            if (conflict.includes('CNIC') && !patient.patient_CNIC && patient_CNIC) return true;
-            return false;
+          return res.status(409).json({
+            success: false,
+            message: "Patient MR Number conflict detected",
+            conflicts: updateConflicts,
+            existingPatient: {
+              patient_MRNo: patient.patient_MRNo,
+              patient_ContactNo: patient.patient_ContactNo,
+              patient_CNIC: patient.patient_CNIC,
+              patient_Name: patient.patient_Name
+            }
           });
-
-          if (!canUpdate) {
-            return res.status(409).json({
-              success: false,
-              message: "Patient already exists with conflicting information",
-              conflicts: updateConflicts,
-              existingPatient: {
-                patient_MRNo: patient.patient_MRNo,
-                patient_ContactNo: patient.patient_ContactNo,
-                patient_CNIC: patient.patient_CNIC,
-                patient_Name: patient.patient_Name
-              }
-            });
-          }
         }
 
-        // Existing patient found - add new visit
+        // Existing patient found by MR number - add new visit
         patient.visits.push(newVisit);
         patient.lastVisit = currentDate;
         patient.totalVisits += 1;
 
-        // Update patient information if provided (only update if new value is provided)
+        // Update patient information if provided
         if (patient_Name) patient.patient_Name = patient_Name;
         if (patient_ContactNo) patient.patient_ContactNo = patient_ContactNo;
         if (patient_Guardian) {
@@ -229,7 +200,7 @@ const createPatient = async (req, res) => {
       }
     }
 
-    // If no existing patient found, create new patient
+    // If no existing patient found by MR number, create new patient
     // Validate required fields for new patient
     if (!patient_Name || !patient_ContactNo) {
       return res.status(400).json({
@@ -239,7 +210,7 @@ const createPatient = async (req, res) => {
     }
 
     // Generate new MR Number for new patient
-    const newPatientMRNo = patient_MRNo || await utils.generateUniqueMrNo(currentDate.toISOString().split('T')[0]);
+    const newPatientMRNo = await utils.generateUniqueMrNo(currentDate.toISOString().split('T')[0]);
 
     // Create new patient with first visit
     patient = await hospitalModel.Patient.create({
@@ -247,7 +218,7 @@ const createPatient = async (req, res) => {
       patient_Name,
       patient_ContactNo,
       patient_Guardian: patient_Guardian || {},
-      patient_CNIC: patient_CNIC || undefined, // Use undefined instead of empty string
+      patient_CNIC: patient_CNIC || undefined,
       patient_Gender: patient_Gender || undefined,
       patient_Age: parseInt(patient_Age) || 0,
       patient_DateOfBirth: patient_DateOfBirth ? new Date(patient_DateOfBirth) : null,
@@ -625,6 +596,7 @@ const getAllPatients = async (req, res) => {
       success: true,
       message: "Patients retrieved successfully",
       information: {
+        count: patients.length,
         patients,
         pagination: {
           currentPage: page,

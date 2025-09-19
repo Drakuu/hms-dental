@@ -7,39 +7,118 @@ import {
   selectSelectedPatientStatus,
   clearSelectedPatient,
   selectAllPatients,
+  selectPagination,
+  selectFilters,
+  selectPatientsStatus,
+  setFilters,
+  setPage
 } from "../../../features/patient/patientSlice";
 import { AiOutlineEdit, AiOutlineDelete, AiOutlineEye, AiOutlinePrinter } from "react-icons/ai";
 import { FiSearch } from "react-icons/fi";
 import PatientDetailModal from "./PatientDetailModal";
 import DeletePatientConfirmation from './DeletePatientConfirmation';
 import { useNavigate } from 'react-router-dom';
-import PrintOptionsModal from './components/PrintOptionsModal'; // New component for print options
+import PrintOptionsModal from './components/PrintOptionsModal';
+import Pagination from "./manageOpd/Pagination"
+import DepartmentReportModal from './manageOpd/DepartmentReportModal';
+import { BsFileBarGraph } from 'react-icons/bs';
 
 const ManageOpd = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const pagination = useSelector(selectPagination);
+  const filters = useSelector(selectFilters);
+  const status = useSelector(selectPatientsStatus);
 
   const patients = useSelector(selectAllPatients);
   const selectedPatient = useSelector(selectSelectedPatient);
   const patientLoading = useSelector(selectSelectedPatientStatus);
-
+  // console.log("the patient from the db is ", patients)
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
-  const [patientToPrint, setPatientToPrint] = useState(null); // Patient selected for printing
-  const [showPrintModal, setShowPrintModal] = useState(false); // Controls print modal visibility
+  const [patientToPrint, setPatientToPrint] = useState(null);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [localSearch, setLocalSearch] = useState(filters.search || "");
+  const [showDepartmentReport, setShowDepartmentReport] = useState(false);
 
-  // Default date range = today
-  const [dateRange, setDateRange] = useState(() => {
-    const today = new Date().toISOString().split('T')[0];
-    return { start: today, end: today };
+  const [dateRange, setDateRange] = useState({
+    start: filters.fromDate || "",
+    end: filters.toDate || ""
   });
 
+  // Sync date range with filters when both dates are set
   useEffect(() => {
-    dispatch(fetchPatients()).unwrap().catch((err) => {
-      console.error("Error fetching all patients:", err);
+    if (dateRange.start && dateRange.end) {
+      const timer = setTimeout(() => {
+        dispatch(setFilters({
+          fromDate: dateRange.start,
+          toDate: dateRange.end
+        }));
+      }, 500); // Debounce the filter update
+
+      return () => clearTimeout(timer);
+    }
+  }, [dateRange, dispatch]);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== filters.search) {
+        dispatch(setFilters({
+          search: localSearch,
+          fromDate: dateRange.start,
+          toDate: dateRange.end
+        }));
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [localSearch, dateRange, dispatch, filters.search]);
+
+  // Fetch patients when filters or page changes
+  useEffect(() => {
+    const fetchData = async () => {
+      await dispatch(fetchPatients({
+        page: pagination.currentPage,
+        limit: pagination.limit,
+        search: filters.search,
+        filters: {
+          gender: filters.gender,
+          bloodType: filters.bloodType,
+          maritalStatus: filters.maritalStatus,
+          fromDate: filters.fromDate,
+          toDate: filters.toDate,
+        },
+      }));
+    };
+
+    fetchData();
+  }, [dispatch, pagination.currentPage, filters]);
+
+  const handlePageChange = (newPage) => {
+    dispatch(setPage(newPage));
+  };
+
+  const handleDateRangeChange = (type, value) => {
+    setDateRange(prev => {
+      const newRange = { ...prev, [type]: value };
+      return newRange;
     });
-  }, [dispatch]);
+  };
+
+  const handleResetFilters = () => {
+    setLocalSearch("");
+    setDateRange({ start: "", end: "" });
+    dispatch(setFilters({
+      search: "",
+      gender: "",
+      bloodType: "",
+      maritalStatus: "",
+      fromDate: "",
+      toDate: ""
+    }));
+  };
 
   const handleView = async (patientId) => {
     await dispatch(fetchPatientById(patientId));
@@ -61,19 +140,20 @@ const ManageOpd = () => {
     setPatientToPrint(null);
   };
 
-  const handleDateRangeChange = (type, value) => {
-    setDateRange(prev => {
-      const next = { ...prev, [type]: value };
-      if (next.start && next.end) {
-        const s = new Date(next.start);
-        const e = new Date(next.end);
-        if (s > e) return { start: next.end, end: next.start };
-      }
-      return next;
-    });
-  };
+  // const handleDateRangeChange = (type, value) => {
+  //   setDateRange(prev => {
+  //     const next = { ...prev, [type]: value };
+  //     if (next.start && next.end) {
+  //       const s = new Date(next.start);
+  //       const e = new Date(next.end);
+  //       if (s > e) return { start: next.end, end: next.start };
+  //     }
+  //     return next;
+  //   });
+  // };
 
   // helpers
+
   const toTitle = (g) => g ? (g[0].toUpperCase() + g.slice(1)) : '';
   const latestVisitOf = (p) => p?.visits?.[0] || null;
   const doctorNameOf = (visit) => {
@@ -167,8 +247,8 @@ const ManageOpd = () => {
                   type="text"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="Search by name or MR#"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
                 />
               </div>
 
@@ -191,42 +271,17 @@ const ManageOpd = () => {
                     min={dateRange.start}
                   />
                 </div>
-
-                <div className="grid items-center grid-cols-2 gap-1">
+                <div className="flex gap-2">
                   <button
-                    onClick={() => {
-                      const today = new Date().toISOString().split('T')[0];
-                      setDateRange({ start: today, end: today });
-                    }}
-                    className="text-xs text-primary-900 px-2 py-0.5 bg-primary-100 rounded hover:bg-primary-200"
-                  >
-                    Today
+                    className="bg-primary-50 text-primary-700 font-semibold p-2 rounded-md"
+                    onClick={handleResetFilters}>
+                    Reset All Filters
                   </button>
                   <button
-                    onClick={() => {
-                      const now = new Date();
-                      const weekStart = new Date(now);
-                      weekStart.setDate(now.getDate() - now.getDay());
-                      setDateRange({
-                        start: weekStart.toISOString().split('T')[0],
-                        end: new Date().toISOString().split('T')[0],
-                      });
-                    }}
-                    className="text-xs px-2 text-primary-900 py-0.5 bg-primary-100 rounded hover:bg-primary-200"
+                    onClick={() => setShowDepartmentReport(true)}
+                    className="text-primary-600 bg-white px-4 py-2 rounded-md flex hover:bg-primary-50 items-center"
                   >
-                    This Week
-                  </button>
-                  <button
-                    onClick={() => {
-                      const now = new Date();
-                      setDateRange({
-                        start: new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0],
-                        end: new Date().toISOString().split('T')[0],
-                      });
-                    }}
-                    className="col-span-2 text-xs px-2 text-primary-900 py-0.5 bg-primary-100 rounded hover:bg-primary-200"
-                  >
-                    This Month
+                    <BsFileBarGraph className="mr-2" />Report
                   </button>
                 </div>
               </div>
@@ -371,12 +426,13 @@ const ManageOpd = () => {
 
         {/* Footer / Showing */}
         {filteredPatients.length > 0 && (
-          <div className="bg-gray-50 border rounded-xs border-t-gray-300 px-6 py-3 flex items-center justify-center border-primary-400">
-            <div className="text-sm text-gray-500 ">
-              Showing <span className="font-medium">{filteredPatients.length}</span> of{' '}
-              <span className="font-medium">{filteredPatients.length}</span> results
-            </div>
-          </div>
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalPatients}
+            itemsPerPage={pagination.limit}
+            onPageChange={handlePageChange}
+          />
         )}
 
         <div className="flex flex-col sm:flex-row sm:justify-between justify-center sm:items-start gap-2 px-6 py-3 bg-gray-50 border-t border-gray-200">
@@ -393,6 +449,10 @@ const ManageOpd = () => {
             >
               Reset All Filters
             </button>
+          )}
+
+          {showDepartmentReport && (
+            <DepartmentReportModal onClose={() => setShowDepartmentReport(false)} />
           )}
         </div>
       </div>

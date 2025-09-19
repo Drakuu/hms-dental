@@ -19,13 +19,25 @@ const getAuthHeaders = () => {
 // Async thunks
 export const fetchPatients = createAsyncThunk(
   "patients/fetchPatients",
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, limit = 10, search = "", filters = {} } = {}, { rejectWithValue }) => {
     try {
+      const cfg = {
+        ...getAuthHeaders(),
+        params: {
+          page,
+          limit,
+          ...(search ? { search } : {}),
+          ...filters, // fromDate, toDate, gender, etc.
+        },
+      };
       const response = await axios.get(
         `${API_URL}/patient/get-patients`,
-        getAuthHeaders()
+        cfg
       );
-      return response.data.information.patients;
+      return {
+        patients: response.data.information.patients,
+        pagination: response.data.information.pagination,
+      };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -149,12 +161,28 @@ const patientSlice = createSlice({
   name: "patients",
   initialState: {
     patients: [],
+    pagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalPatients: 0,
+      limit: 10,
+      hasNext: false,
+      hasPrev: false
+    },
+    filters: {
+      search: '',
+      gender: '',
+      bloodType: '',
+      maritalStatus: '',
+      fromDate: '',
+      toDate: ''
+    },
     selectedPatient: null,
     searchResults: [],
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     selectedPatientStatus: "idle",
     searchStatus: "idle",
-    patientData:null,
+    patientData: null,
     visits: [],
     refunds: [],
     refundSummary: null,
@@ -162,6 +190,24 @@ const patientSlice = createSlice({
     error: null,
   },
   reducers: {
+    setFilters: (state, action) => {
+      state.filters = { ...state.filters, ...action.payload };
+      // state.pagination.currentPage = 1; // Reset to first page when filters change
+    },
+    setPage: (state, action) => {
+      state.pagination.currentPage = action.payload;
+    },
+    clearFilters: (state) => {
+      state.filters = {
+        search: '',
+        gender: '',
+        bloodType: '',
+        maritalStatus: '',
+        fromDate: '',
+        toDate: ''
+      };
+      state.pagination.currentPage = 1;
+    },
     clearSelectedPatient: (state) => {
       state.selectedPatient = null;
       state.selectedPatientStatus = "idle";
@@ -173,7 +219,7 @@ const patientSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setSelectedPatient: (state, action) => {  
+    setSelectedPatient: (state, action) => {
       state.selectedPatient = action.payload;
     },
     clearPatientData: (state) => {
@@ -192,7 +238,9 @@ const patientSlice = createSlice({
       })
       .addCase(fetchPatients.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.patients = action.payload;
+        state.patients = action.payload.patients;
+        console.log("the data is ,", state.patients)
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchPatients.rejected, (state, action) => {
         state.status = "failed";
@@ -323,6 +371,9 @@ export const {
   clearSearchResults,
   clearPatientData,
   clearError,
+  setFilters,
+  clearFilters,
+  setPage,
 } = patientSlice.actions;
 
 export const selectAllPatients = (state) => state.patients.patients;
@@ -332,6 +383,9 @@ export const selectSelectedPatient = (state) => state.patients.selectedPatient;
 export const selectSelectedPatientStatus = (state) => state.patients.selectedPatientStatus;
 export const selectSearchResults = (state) => state.patients.searchResults;
 export const selectSearchStatus = (state) => state.patients.searchStatus;
+export const selectPagination = (state) => state.patients.pagination;
+export const selectFilters = (state) => state.patients.filters;
+export const selectPatientsStatus = (state) => state.patients.status;
 export const selectPatientError = (state) => state.patients.error;
 export const { setSelectedPatient } = patientSlice.actions;
 

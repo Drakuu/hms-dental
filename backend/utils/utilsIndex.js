@@ -8,6 +8,7 @@ const generateUniqueToken = require("./generateUniqueToken");
 const generateUniqueId = require("./generateUniqueId");
 const generateUniqueStaffId = require("./generateUniqueStaffId");
 const generateDepartmentToken =require("./generateDepartmentToken")
+const { generateOPDToken, generateProcedureToken } = require("./generateDepartmentToken");
 
 const utils = {
   generateUniqueUserId,
@@ -18,6 +19,8 @@ const utils = {
   generateUniqueId,
   generateUniqueStaffId,
   generateDepartmentToken,
+  generateOPDToken, 
+  generateProcedureToken
   
 };
 
