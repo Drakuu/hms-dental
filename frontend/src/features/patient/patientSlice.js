@@ -239,7 +239,7 @@ const patientSlice = createSlice({
       .addCase(fetchPatients.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.patients = action.payload.patients;
-        console.log("the data is ,", state.patients)
+        // console.log("the data is ,", state.patients)
         state.pagination = action.payload.pagination;
       })
       .addCase(fetchPatients.rejected, (state, action) => {

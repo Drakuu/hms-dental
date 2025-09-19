@@ -7,6 +7,9 @@ const counter = require("./counter.model");
 const Refund = require("./refundopd.model");
 const Appointment = require("./appointment.model");
 const Procedure = require("./procedure.model")
+const Product = require("./product.model")
+const Billing = require("./billing.model")
+
 
 const Hospital = {
     User,
@@ -18,6 +21,8 @@ const Hospital = {
     Refund,
     Appointment,
     Procedure,
+    Product,
+    Billing
 };
 
 module.exports = Hospital;

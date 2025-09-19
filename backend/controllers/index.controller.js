@@ -8,6 +8,8 @@ const Department = require("./departments.controller");
 const Refund = require("./refundOpd.controller");
 const Summary = require("./summary.controller");
 const Procedure = require("./procedure.controller")
+const Product = require("./product.controller")
+const Billing = require("./billing.controller")
 
 const controller = {
   user,
@@ -19,6 +21,8 @@ const controller = {
   Refund,
   Summary,
   Procedure,
+  Product,
+  Billing
 };
 
 module.exports = controller;

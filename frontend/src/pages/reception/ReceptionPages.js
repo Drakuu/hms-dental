@@ -24,6 +24,13 @@ import DentalProcedure from './procedures/dental/DentalProcedure';
 import SkinProcedure from './procedures/skin/SkinProcedure';
 import EyesProcedure from './procedures/eyes/Eyes';
 
+// pos 
+import SaleDashboard from './pos/Dashboard';
+import Inventory from './inventory/Inventory';
+import Bills from './billing/MakeBill';
+import HoldBill from './billing/HoldBill';
+import SaleSummary from './pos/Summary';
+
 export {
   AdminDashboard,
   NewOpd,
@@ -37,5 +44,9 @@ export {
   DentalProcedure,
   SkinProcedure,
   EyesProcedure,
-  
+  SaleDashboard,
+  Inventory,
+  Bills,
+  HoldBill,
+  SaleSummary,
 };

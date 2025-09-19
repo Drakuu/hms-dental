@@ -12,6 +12,11 @@ import {
   DentalProcedure,
   SkinProcedure,
   EyesProcedure,
+  SaleDashboard,
+  Inventory,
+  Bills,
+  HoldBill,
+  SaleSummary,
 } from '../pages/reception/ReceptionPages';
 import AdminDashboard from "../pages/admin/dashboard/AdminDashboard";
 import DynamicLayout from '../layouts/DynamicLayout';
@@ -48,10 +53,18 @@ const ReceptionRoutes = () => {
           {/* Summary */}
           <Route path="summary" element={<Summary />} />
 
-{/* Procedures */}
+          {/* Procedures */}
           <Route path="dental-procedure" element={<DentalProcedure />} />
           <Route path="skin-procedure" element={<SkinProcedure />} />
           <Route path="eyes-procedure" element={<EyesProcedure />} />
+
+          {/* pos */}
+          <Route path="sale-dashboard" element={<SaleDashboard />} />
+          <Route path="inventory" element={<Inventory />} />
+          <Route path="bills" element={<Bills />} />
+          <Route path="hold-bill" element={<HoldBill />} />
+          <Route path="sale-summary" element={<SaleSummary />} />
+
         </Route>
       </Route>
     </Routes>

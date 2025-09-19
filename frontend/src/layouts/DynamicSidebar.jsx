@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, X } from "lucide-react";
+import { BarChart, ChevronDown, X } from "lucide-react";
 import {
   Dashboard as DashboardIcon,
   Groups as GroupsIcon,
@@ -69,12 +69,8 @@ const DynamicSidebar = ({ userRole, isOpen, toggleSidebar }) => {
         return "/admin";
       case "receptionist":
         return "/receptionist";
-      case "lab":
-        return "/lab";
       case "doctor":
         return "/doctor";
-      case "radiology":
-        return "/radiology";
       default:
         return "/";
     }
@@ -204,17 +200,29 @@ const DynamicSidebar = ({ userRole, isOpen, toggleSidebar }) => {
         ],
       },
       {
+        name: "Expenses",
+        icon: <CalendarIcon className="text-lg" />,
+        links: [{ href: "expenses", label: "Expenses" }],
+      },
+      {
+        name: "Point of Sales",
+        icon: <BarChart className="text-lg" />,
+        links: [
+          { href: "sale-dashboard", label: "dashboard" },
+          { href: "inventory", label: "inventory" },
+          { href: "bills", label: "bills" },
+          { href: "hold-bill", label: "hold-bill" },
+          { href: "sale-summary", label: "summary" }
+        ],
+      },
+      {
         name: "Summary",
         icon: <NotesIcon className="text-lg" />,
         links: [
           { href: "summary", label: "Summary" },
         ],
       },
-      {
-        name: "Expenses",
-        icon: <CalendarIcon className="text-lg" />,
-        links: [{ href: "expenses", label: "Expenses" }],
-      },
+      
     ],
   };
 

@@ -10,6 +10,8 @@ const Refund = require("./refundOpd.route");
 const expenses = require("./expenses.route");
 const summary = require("./summary.route");
 const Procedure =require("./procedure.route");
+const Product = require("./products.route")
+const Billing = require("./billing.route")
 
 router.use("/user", user);
 router.use("/doctor", doctor);
@@ -21,6 +23,8 @@ router.use("/refund",Refund);
 router.use("/expense", expenses);
 router.use("/summary", summary);
 router.use("/procedure", Procedure);
+router.use("/products", Product);
+router.use("/bills", Billing);
 
 
 module.exports = router;

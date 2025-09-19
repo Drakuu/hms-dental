@@ -41,7 +41,7 @@ export default function Expenses() {
   const { expenses, isLoading, isError, isSuccess, message } = useSelector((state) => state.expenses);
 
   const { doctors = [] } = useSelector((state) => state.doctor);
-console.log({doctors})
+// console.log({doctors})
 
 
 

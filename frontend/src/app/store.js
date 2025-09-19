@@ -7,7 +7,8 @@ import patientReducer from "../features/patient/patientSlice";
 import refundOpdReducer from "../features/refund/refundopdSlice";
 import expensesReducer from "../features/expenses/expensesSlice"
 import appointmentReducer from "../features/appointments/appointmentSlice";
-
+import productReducer from "../features/product/productSlice"
+import billingReducer from "../features/billing/billingSlice"
 
 const store = configureStore({
   reducer: {
@@ -19,6 +20,8 @@ const store = configureStore({
     refund: refundOpdReducer,
     expenses: expensesReducer,
     appointments: appointmentReducer,
+    products: productReducer,
+    billing: billingReducer,
 
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
