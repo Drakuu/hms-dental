@@ -33,7 +33,7 @@ const ManageOpd = () => {
   const patients = useSelector(selectAllPatients);
   const selectedPatient = useSelector(selectSelectedPatient);
   const patientLoading = useSelector(selectSelectedPatientStatus);
-  // console.log("the patient from the db is ", patients)
+
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
@@ -42,10 +42,26 @@ const ManageOpd = () => {
   const [localSearch, setLocalSearch] = useState(filters.search || "");
   const [showDepartmentReport, setShowDepartmentReport] = useState(false);
 
+  // Set default date range to today
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   const [dateRange, setDateRange] = useState({
-    start: filters.fromDate || "",
-    end: filters.toDate || ""
+    start: filters.fromDate || getTodayDate(),
+    end: filters.toDate || getTodayDate()
   });
+
+  // Initialize with today's date in filters
+  useEffect(() => {
+    if (!filters.fromDate && !filters.toDate) {
+      dispatch(setFilters({
+        fromDate: getTodayDate(),
+        toDate: getTodayDate()
+      }));
+    }
+  }, []);
 
   // Sync date range with filters when both dates are set
   useEffect(() => {
@@ -109,14 +125,15 @@ const ManageOpd = () => {
 
   const handleResetFilters = () => {
     setLocalSearch("");
-    setDateRange({ start: "", end: "" });
+    const today = getTodayDate();
+    setDateRange({ start: today, end: today });
     dispatch(setFilters({
       search: "",
       gender: "",
       bloodType: "",
       maritalStatus: "",
-      fromDate: "",
-      toDate: ""
+      fromDate: today,
+      toDate: today
     }));
   };
 
@@ -140,20 +157,7 @@ const ManageOpd = () => {
     setPatientToPrint(null);
   };
 
-  // const handleDateRangeChange = (type, value) => {
-  //   setDateRange(prev => {
-  //     const next = { ...prev, [type]: value };
-  //     if (next.start && next.end) {
-  //       const s = new Date(next.start);
-  //       const e = new Date(next.end);
-  //       if (s > e) return { start: next.end, end: next.start };
-  //     }
-  //     return next;
-  //   });
-  // };
-
   // helpers
-
   const toTitle = (g) => g ? (g[0].toUpperCase() + g.slice(1)) : '';
   const latestVisitOf = (p) => p?.visits?.[0] || null;
   const doctorNameOf = (visit) => {
@@ -173,23 +177,25 @@ const ManageOpd = () => {
         (p.patient_Name || '').toLowerCase().includes(q) ||
         (p.patient_MRNo || '').toString().includes(searchQuery);
 
-      // Date filter by lastVisit (fallback createdAt)
+      // Date filter by visit date (use the latest visit date)
       let matchesDate = true;
-      const baseDate = new Date(p.lastVisit || p.createdAt);
-      if (isNaN(baseDate.getTime())) return matchesSearch;
+      const latestVisit = latestVisitOf(p);
+      const visitDate = latestVisit ? new Date(latestVisit.visitDate || latestVisit.createdAt) : new Date(p.createdAt);
+
+      if (isNaN(visitDate.getTime())) return matchesSearch;
 
       if (dateRange.start || dateRange.end) {
         if (dateRange.start && !dateRange.end) {
-          matchesDate = baseDate >= new Date(dateRange.start);
+          matchesDate = visitDate >= new Date(dateRange.start);
         } else if (!dateRange.start && dateRange.end) {
           const end = new Date(dateRange.end);
           end.setHours(23, 59, 59, 999);
-          matchesDate = baseDate <= end;
+          matchesDate = visitDate <= end;
         } else if (dateRange.start && dateRange.end) {
           const start = new Date(dateRange.start);
           const end = new Date(dateRange.end);
           end.setHours(23, 59, 59, 999);
-          matchesDate = baseDate >= start && baseDate <= end;
+          matchesDate = visitDate >= start && visitDate <= end;
         }
       }
 
@@ -222,6 +228,11 @@ const ManageOpd = () => {
           patient={patientToPrint}
           onClose={handleClosePrintModal}
         />
+      )}
+
+      {/* Department Report Modal */}
+      {showDepartmentReport && (
+        <DepartmentReportModal onClose={() => setShowDepartmentReport(false)} />
       )}
 
       {/* Main Card */}
@@ -273,9 +284,9 @@ const ManageOpd = () => {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    className="bg-primary-50 text-primary-700 font-semibold p-2 rounded-md"
+                    className="bg-white text-primary-600 font-semibold p-2 rounded-md"
                     onClick={handleResetFilters}>
-                    Reset All Filters
+                    Reset All
                   </button>
                   <button
                     onClick={() => setShowDepartmentReport(true)}
@@ -444,15 +455,11 @@ const ManageOpd = () => {
 
           {(dateRange.start || dateRange.end) && (
             <button
-              onClick={() => setDateRange({ start: '', end: '' })}
+              onClick={handleResetFilters}
               className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
             >
               Reset All Filters
             </button>
-          )}
-
-          {showDepartmentReport && (
-            <DepartmentReportModal onClose={() => setShowDepartmentReport(false)} />
           )}
         </div>
       </div>

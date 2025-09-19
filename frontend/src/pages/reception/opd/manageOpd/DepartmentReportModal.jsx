@@ -5,9 +5,11 @@ import { AiOutlineClose, AiOutlinePrinter } from "react-icons/ai";
 import {
    selectAllPatients
 } from "../../../../features/patient/patientSlice"
+
 const DepartmentReportModal = ({ onClose }) => {
    const allPatients = useSelector(selectAllPatients);
    const [selectedDepartment, setSelectedDepartment] = useState("");
+   const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0]);
 
    // Extract unique departments from patients
    const departments = useMemo(() => {
@@ -23,20 +25,36 @@ const DepartmentReportModal = ({ onClose }) => {
       return Array.from(deptSet).sort();
    }, [allPatients]);
 
-   // Filter patients by selected department
+   // Filter patients by selected department and date
    const reportData = useMemo(() => {
       if (!selectedDepartment) return [];
 
+      const selectedDate = new Date(reportDate);
+      const nextDay = new Date(selectedDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+
       return allPatients.filter(patient => {
          const visits = patient.visits || [];
-         return visits.some(visit =>
-            visit.doctor?.doctor_Department === selectedDepartment
-         );
+         return visits.some(visit => {
+            const visitDate = new Date(visit.visitDate || visit.createdAt);
+            return visit.doctor?.doctor_Department === selectedDepartment &&
+               visitDate >= selectedDate &&
+               visitDate < nextDay;
+         });
       }).map(patient => {
-         // Get the latest visit to the selected department
+         // Get visits to the selected department on the selected date
          const departmentVisits = (patient.visits || [])
-            .filter(visit => visit.doctor?.doctor_Department === selectedDepartment)
-            .sort((a, b) => new Date(b.visitDate) - new Date(a.visitDate));
+            .filter(visit => {
+               const visitDate = new Date(visit.visitDate || visit.createdAt);
+               const selectedDateObj = new Date(reportDate);
+               const nextDay = new Date(selectedDateObj);
+               nextDay.setDate(nextDay.getDate() + 1);
+
+               return visit.doctor?.doctor_Department === selectedDepartment &&
+                  visitDate >= selectedDateObj &&
+                  visitDate < nextDay;
+            })
+            .sort((a, b) => new Date(b.visitDate || b.createdAt) - new Date(a.visitDate || a.createdAt));
 
          const latestVisit = departmentVisits[0] || {};
 
@@ -44,10 +62,11 @@ const DepartmentReportModal = ({ onClose }) => {
             ...patient,
             doctor: latestVisit.doctor,
             consultationFee: latestVisit.consultationFee || 0,
-            amountPaid: latestVisit.amountPaid || 0
+            amountPaid: latestVisit.amountPaid || 0,
+            visitDate: latestVisit.visitDate || latestVisit.createdAt
          };
       });
-   }, [allPatients, selectedDepartment]);
+   }, [allPatients, selectedDepartment, reportDate]);
 
    const handlePrint = () => {
       const printContent = document.getElementById('department-report-content');
@@ -76,11 +95,11 @@ const DepartmentReportModal = ({ onClose }) => {
 
             {/* Content */}
             <div className="p-4">
-               <div className="mb-4">
-                  <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2">
-                     Select Department
-                  </label>
-                  <div className="flex gap-2">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                     <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2">
+                        Select Department
+                     </label>
                      <select
                         id="department"
                         className="block w-full p-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -93,13 +112,28 @@ const DepartmentReportModal = ({ onClose }) => {
                         ))}
                      </select>
                   </div>
+
+                  <div>
+                     <label htmlFor="reportDate" className="block text-sm font-medium text-gray-700 mb-2">
+                        Select Date
+                     </label>
+                     <input
+                        type="date"
+                        id="reportDate"
+                        className="block w-full p-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                        value={reportDate}
+                        onChange={(e) => setReportDate(e.target.value)}
+                        max={new Date().toISOString().split('T')[0]}
+                     />
+                  </div>
                </div>
 
                {reportData.length > 0 && (
                   <>
                      <div className="mb-4 flex justify-between items-center">
                         <h3 className="text-lg font-semibold">
-                           {selectedDepartment} Department Report ({reportData.length} patients)
+                           {selectedDepartment} Department Report for {new Date(reportDate).toLocaleDateString()}
+                           ({reportData.length} patients)
                         </h3>
                         <button
                            onClick={handlePrint}
@@ -113,6 +147,7 @@ const DepartmentReportModal = ({ onClose }) => {
                      <div id="department-report-content">
                         <div className="hidden print:block text-center mb-4">
                            <h1 className="text-2xl font-bold">{selectedDepartment} Department Report</h1>
+                           <p className="text-gray-600">Date: {new Date(reportDate).toLocaleDateString()}</p>
                            <p className="text-gray-600">Generated on: {new Date().toLocaleDateString()}</p>
                         </div>
 
@@ -182,7 +217,7 @@ const DepartmentReportModal = ({ onClose }) => {
 
                {selectedDepartment && reportData.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
-                     No patients found for {selectedDepartment} department
+                     No patients found for {selectedDepartment} department on {new Date(reportDate).toLocaleDateString()}
                   </div>
                )}
             </div>
