@@ -13,10 +13,9 @@ const PrintA4 = ({ formData }) => {
   const patientAge = formData?.patient_Age || formData?.age || '_______';
   const patientGender = formData?.patient_Gender || formData?.gender || '_______';
   const guardianName = formData?.patient_Guardian?.guardian_Name || formData?.guardianName || '_______';
-  const guardianContact = formData?.patient_Guardian?.guardian_Contact || formData?.guardianContact || '_______';
+  const patient_ContactNo = formData?.patient_ContactNo || formData?.guardianContact || '_______';
   const guardianRelation = formData?.patient_Guardian?.guardian_Relation || formData?.guardianRelation || '_______';
   const patientAddress = formData?.patient_Address || formData?.address || '_______';
-  const maritalStatus = formData?.patient_MaritalStatus || formData?.maritalStatus || '_______';
 
   const doctorName = formData?.visitData?.doctor?.user?.user_Name || formData?.doctorName || '_______';
   const doctorQualification = formData?.visitData?.doctor?.doctor_Qualifications || formData?.doctorQualification || '_______';
@@ -31,6 +30,7 @@ const PrintA4 = ({ formData }) => {
 
   // Payment info
   const amountStatus = formData?.visitData?.amountStatus || 'cash';
+  const amountPaid = formData?.visitData?.amountPaid || 'N/A';
   const token = formData?.visitData?.token || 0;
   const notes = formData?.visitData?.notes || 0;
 
@@ -267,7 +267,7 @@ const PrintA4 = ({ formData }) => {
 
             .contact-info {
               text-align: right;
-              transform: skewX(-10deg);
+              transform: skewX(0deg);
               background: #0891b2;
               background: linear-gradient(to right, #0891b2, #4b5563);
               color: white;
@@ -276,8 +276,9 @@ const PrintA4 = ({ formData }) => {
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
               position: absolute;
-              bottom: 5mm;
-              right: 0;
+              bottom: 9mm;
+              border-radius: 2mm 2mm 0 0;
+              right: 70mm;
             }
 
             .contact-info div:first-child {
@@ -358,6 +359,11 @@ const PrintA4 = ({ formData }) => {
               font-weight: bold;
             }
 
+            .token{
+            font-weight: 600;
+            font-size: 18px;
+            }
+
             @media print {
               .print-body {
                 padding: 0;
@@ -432,8 +438,8 @@ const PrintA4 = ({ formData }) => {
             <div className="patient-details-section">
               <div className="section-title">PATIENT DETAILS</div>
               <div className="detail-row">
-                <span className="detail-label">Token Number:</span>
-                <span className="detail-value">{safeData(token)}</span>
+                <span className="detail-label ">Token Number:</span>
+                <span className="detail-value token">{safeData(token)}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">MR Number:</span>
@@ -441,19 +447,19 @@ const PrintA4 = ({ formData }) => {
               </div>
               <div className="detail-row">
                 <span className="detail-label">Patient Name:</span>
-                <span className="detail-value">{safeData(patientName)}</span>
+                <span className="detail-value">{safeData(patientName.toUpperCase())}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Age/Gender:</span>
                 <span className="detail-value">{safeData(patientAge)}/{safeData(patientGender)}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Guardian Name:</span>
-                <span className="detail-value">{safeData(guardianName)}</span>
+                <span className="detail-label">Patient's Contact:</span>
+                <span className="detail-value">{safeData(patient_ContactNo)}</span>
               </div>
               <div className="detail-row">
-                <span className="detail-label">Guardian Contact:</span>
-                <span className="detail-value">{safeData(guardianContact)}/{safeData(guardianRelation)}</span>
+                <span className="detail-label">Guardian Name:</span>
+                <span className="detail-value">{safeData(guardianName)}/{safeData(guardianRelation)}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">Address:</span>
@@ -493,7 +499,7 @@ const PrintA4 = ({ formData }) => {
               </div>
               <div className="detail-row">
                 <span className="detail-label">Payment Status:</span>
-                <span style={{ textTransform: 'capitalize' }}>{safeData(amountStatus)}</span>
+                <span style={{ textTransform: 'capitalize' }}>{safeData(amountStatus)}/PKR-{safeData(amountPaid)}</span>
               </div>
               <div className="detail-row">
                 <span className="detail-label">VCO:</span>
@@ -516,6 +522,9 @@ const PrintA4 = ({ formData }) => {
           <div className="footer">
             <div className="signature-box">
               Doctor Signature/Stamp
+            </div>
+            <div className="signature-box">
+              Next/Follow-up Visit
             </div>
           </div>
 

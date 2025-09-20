@@ -299,7 +299,7 @@ export default function Expenses() {
                         <option value="">Select Doctor</option>
                         {doctors.map((d) => (
                           <option key={d._id} value={d?.user?.user_Name}>
-                            {d?.user?.user_Name}
+                            {d?.user?.user_Name}-({d?.doctor_Department})
                           </option>
                         ))}
                       </select>

@@ -1,3 +1,4 @@
+// OpdRefundList.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -10,9 +11,11 @@ import {
   setFilters,
   clearFilters
 } from '../../../features/refund/refundopdSlice';
-import { FiSearch, FiFilter, FiCalendar, FiDollarSign, FiUser, FiFileText } from 'react-icons/fi';
+import { FiSearch, FiFilter, FiCalendar, FiDollarSign, FiUser, FiFileText, FiPrinter } from 'react-icons/fi';
 import { format, startOfDay, endOfDay, isToday, isYesterday, parseISO } from 'date-fns';
 import { getRoleRoute } from "../../../utils/getRoleRoute"
+import RefundReportModal from './components/RefundReportModal';
+import RefundPrintTemplate from './RefundPrintTemplate';
 
 const OpdRefundList = () => {
   const dispatch = useDispatch();
@@ -22,28 +25,28 @@ const OpdRefundList = () => {
   const loading = useSelector(selectRefundLoading);
   const error = useSelector(selectRefundError);
 
-  const [dateFilter, setDateFilter] = useState('today');
+  const [startDateFilter, setStartDateFilter] = useState('');
+  const [endDateFilter, setEndDateFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printData, setPrintData] = useState(null);
 
   useEffect(() => {
-    // Load refunds on component mount
     dispatch(getAllRefunds());
   }, [dispatch]);
 
   useEffect(() => {
-    // Apply filters when they change
     const filters = {};
 
-    // Date filter
-    if (dateFilter === 'today') {
-      filters.startDate = startOfDay(new Date()).toISOString();
-      filters.endDate = endOfDay(new Date()).toISOString();
-    } else if (dateFilter === 'yesterday') {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      filters.startDate = startOfDay(yesterday).toISOString();
-      filters.endDate = endOfDay(yesterday).toISOString();
+    // Date filters
+    if (startDateFilter) {
+      filters.startDate = startOfDay(new Date(startDateFilter)).toISOString();
+    }
+
+    if (endDateFilter) {
+      filters.endDate = endOfDay(new Date(endDateFilter)).toISOString();
     }
 
     // Status filter
@@ -51,25 +54,60 @@ const OpdRefundList = () => {
       filters.status = statusFilter;
     }
 
+    if (searchQuery) {
+      filters.patientMRNo = searchQuery;
+    }
+
     dispatch(setFilters(filters));
     dispatch(getAllRefunds(filters));
-  }, [dateFilter, statusFilter, dispatch]);
+  }, [startDateFilter, endDateFilter, statusFilter, dispatch]);
 
   const handleSearch = () => {
     const filters = {};
     if (searchQuery) {
       filters.patientMRNo = searchQuery;
     }
+
+    if (startDateFilter) {
+      filters.startDate = startOfDay(new Date(startDateFilter)).toISOString();
+    }
+
+    if (endDateFilter) {
+      filters.endDate = endOfDay(new Date(endDateFilter)).toISOString();
+    }
+
     dispatch(setFilters(filters));
     dispatch(getAllRefunds(filters));
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   const handleClearFilters = () => {
     setSearchQuery('');
-    setDateFilter('today');
+    setStartDateFilter('');
+    setEndDateFilter('');
     setStatusFilter('');
     dispatch(clearFilters());
     dispatch(getAllRefunds());
+  };
+
+  const handleGenerateReport = async (dateRange) => {
+    const filters = {
+      startDate: startOfDay(new Date(dateRange.startDate)).toISOString(),
+      endDate: endOfDay(new Date(dateRange.endDate)).toISOString()
+    };
+
+    await dispatch(getAllRefunds(filters));
+    setPrintData({
+      data: refunds,
+      filters: dateRange
+    });
+    setShowReportModal(false);
+    setShowPrintModal(true);
   };
 
   const handleRefundClick = (refund) => {
@@ -165,6 +203,7 @@ const OpdRefundList = () => {
                 </div>
                 <p className="text-xl font-bold text-white">{refunds.length}</p>
               </div>
+
             </div>
           </div>
         </div>
@@ -182,38 +221,69 @@ const OpdRefundList = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   placeholder="Enter MR number..."
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
-                <FiSearch className="absolute left-3 top-3 text-gray-400" />
+                <FiSearch
+                  className="absolute left-3 top-3 text-gray-400 cursor-pointer"
+                  onClick={handleSearch}
+                />
               </div>
             </div>
 
             {/* Date Filter */}
+            <div className='flex flex-col md:flex-row gap-4'>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  value={startDateFilter}
+                  onChange={(e) => setStartDateFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  value={endDateFilter}
+                  onChange={(e) => setEndDateFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+            </div>
+
+            {/* Status Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date Filter
+                Status
               </label>
               <select
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="all">All Dates</option>
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="processed">Processed</option>
+                <option value="rejected">Rejected</option>
               </select>
             </div>
 
             {/* Action Buttons */}
             <div className="flex items-end space-x-2">
               <button
-                onClick={handleSearch}
-                disabled={loading}
-                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 flex items-center"
+                onClick={() => setShowReportModal(true)}
+                className="w-full h-full bg-primary-600 flex items-center justify-center text-white hover:bg-primary-700 rounded transition-colors px-4 py-2"
               >
-                <FiSearch className="mr-2" />
-                Search
+                <FiPrinter className="h-5 w-5 mr-2" />
+                <span className="text-sm">Generate Report</span>
               </button>
               <button
                 onClick={handleClearFilters}
@@ -226,6 +296,27 @@ const OpdRefundList = () => {
         </div>
       </div>
 
+      {showReportModal && (
+        <RefundReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          onGenerateReport={handleGenerateReport}
+          refunds={refunds}
+        />
+      )}
+
+      {showPrintModal && printData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+            <RefundPrintTemplate
+              data={printData.data}
+              filters={printData.filters}
+              onClose={() => setShowPrintModal(false)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Refunds List */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {/* Table Header */}
@@ -233,9 +324,9 @@ const OpdRefundList = () => {
           <h2 className="text-lg font-semibold text-gray-800">
             Refund Records ({refunds.length})
           </h2>
-          {dateFilter === 'today' && (
+          {(startDateFilter || endDateFilter) && (
             <p className="text-sm text-gray-600">
-              Showing refunds for today - {format(new Date(), 'dd MMMM yyyy')}
+              Showing refunds from {startDateFilter || 'the beginning'} to {endDateFilter || 'now'}
             </p>
           )}
         </div>
@@ -250,7 +341,7 @@ const OpdRefundList = () => {
             <FiFileText className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-600">No refund records found</h3>
             <p className="text-gray-500 mt-2">
-              {searchQuery || statusFilter || dateFilter !== 'all'
+              {searchQuery || statusFilter || startDateFilter || endDateFilter
                 ? 'Try adjusting your search filters'
                 : 'No refunds have been processed yet'
               }
@@ -316,8 +407,13 @@ const OpdRefundList = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800`}>
-                        approved
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${refund.status === 'approved' || refund.status === 'processed'
+                          ? 'bg-green-100 text-green-800'
+                          : refund.status === 'pending'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                        {refund.status || 'N/A'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

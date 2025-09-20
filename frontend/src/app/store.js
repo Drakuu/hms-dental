@@ -5,10 +5,11 @@ import doctorReducer from "../features/doctor/doctorSlice";
 import staffReducer from "../features/staff/staffslice"
 import patientReducer from "../features/patient/patientSlice";
 import refundOpdReducer from "../features/refund/refundopdSlice";
-import expensesReducer from "../features/expenses/expensesSlice"
+import expensesReducer from "../features/expenses/expensesSlice";
 import appointmentReducer from "../features/appointments/appointmentSlice";
-import productReducer from "../features/product/productSlice"
-import billingReducer from "../features/billing/billingSlice"
+import productReducer from "../features/product/productSlice";
+import billingReducer from "../features/billing/billingSlice";
+import summaryReducer from "../features/summary/Slice";
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,8 @@ const store = configureStore({
     appointments: appointmentReducer,
     products: productReducer,
     billing: billingReducer,
+    summary: summaryReducer,
+
 
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
