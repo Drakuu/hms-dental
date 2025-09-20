@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 
 const ThermalPrintTemplate = ({ bill }) => {
+  // Add safety checks for undefined bill
+  if (!bill) {
+    return <div>No bill data available for printing</div>;
+  }
+
   useEffect(() => {
     // Inject custom thermal printer CSS (runs only once)
     const style = document.createElement("style");
@@ -47,11 +52,11 @@ const ThermalPrintTemplate = ({ bill }) => {
   const handlePrint = () => {
     const printContent = document.getElementById("print-section");
     const originalContents = document.body.innerHTML;
-    
+
     document.body.innerHTML = printContent.innerHTML;
     window.print();
     document.body.innerHTML = originalContents;
-    
+
     // Reload to restore React functionality
     window.location.reload();
   };
@@ -62,9 +67,9 @@ const ThermalPrintTemplate = ({ bill }) => {
       <div
         id="print-section"
         className="print-section"
-        style={{ 
-          width: "80mm", 
-          fontFamily: "monospace", 
+        style={{
+          width: "80mm",
+          fontFamily: "monospace",
           fontSize: "12px",
           display: "none" // Hide from normal view
         }}
@@ -78,13 +83,16 @@ const ThermalPrintTemplate = ({ bill }) => {
         <div className="border-bottom mt-2 mb-2"></div>
 
         <div className="flex justify-between">
-          <span>Bill #: {bill._id.slice(-6).toUpperCase()}</span>
-          <span>{new Date(bill.createdAt).toLocaleString()}</span>
+          {/* Add safety check for bill._id */}
+          <span>Bill #: {bill._id?.slice(-6).toUpperCase() || 'N/A'}</span>
+          {/* Add safety check for bill.createdAt */}
+          <span>{new Date(bill.createdAt || new Date()).toLocaleString()}</span>
         </div>
 
         <div className="flex justify-between mt-2">
+          {/* Add safety checks for customerName and status */}
           <span>Customer: {bill.customerName || "Walk-in"}</span>
-          <span>Status: {bill.status.toUpperCase()}</span>
+          <span>Status: {(bill.status || '').toUpperCase()}</span>
         </div>
 
         <div className="border-bottom mt-2 mb-2"></div>
@@ -96,16 +104,19 @@ const ThermalPrintTemplate = ({ bill }) => {
 
         <div className="border-bottom mb-2"></div>
 
-        {bill.products.map((item, index) => (
+        {/* Add safety check for bill.products */}
+        {(bill.products || []).map((item, index) => (
           <div key={index} className="mb-1">
             <div className="flex justify-between">
-              <span>{item.name}</span>
-              <span>PKR {item.total.toFixed(2)}</span>
+              <span>{item.name || 'Item'}</span>
+              {/* Add safety check for item.total */}
+              <span>PKR {(item.total || 0).toFixed(2)}</span>
             </div>
             <div className="text-sm">
-              {item.quantity} x PKR {item.price.toFixed(2)}
-              {item.discount > 0 &&
-                ` - Discount: PKR ${item.discount.toFixed(2)}`}
+              {/* Add safety checks for item properties */}
+              {item.quantity || 0} x PKR {(item.price || 0).toFixed(2)}
+              {(item.discount || 0) > 0 &&
+                ` - Discount: PKR ${(item.discount || 0).toFixed(2)}`}
             </div>
             {item.size && <div className="text-sm">Size: {item.size}</div>}
             {item.color && <div className="text-sm">Color: {item.color}</div>}
@@ -118,9 +129,8 @@ const ThermalPrintTemplate = ({ bill }) => {
           <span>Subtotal:</span>
           <span>
             PKR{" "}
-            {bill.products
-              .reduce((sum, item) => sum + item.price * item.quantity, 0)
-              .toFixed(2)}
+            {/* Add safety check for products array */}
+            {(bill.products || []).reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0).toFixed(2)}
           </span>
         </div>
 
@@ -128,9 +138,7 @@ const ThermalPrintTemplate = ({ bill }) => {
           <span>Discount:</span>
           <span>
             PKR{" "}
-            {bill.products
-              .reduce((sum, item) => sum + item.discount, 0)
-              .toFixed(2)}
+            {(bill.products || []).reduce((sum, item) => sum + (item.discount || 0), 0).toFixed(2)}
           </span>
         </div>
 
@@ -138,14 +146,16 @@ const ThermalPrintTemplate = ({ bill }) => {
 
         <div className="flex justify-between font-bold">
           <span>TOTAL:</span>
-          <span>PKR {bill.totalAmount.toFixed(2)}</span>
+          {/* Add safety check for totalAmount */}
+          <span>PKR {(bill.totalAmount || 0).toFixed(2)}</span>
         </div>
 
         <div className="border-bottom mt-2 mb-2"></div>
 
         <div className="flex justify-between">
           <span>Payment Method:</span>
-          <span>{bill.paymentMethod?.toUpperCase() || "CASH"}</span>
+          {/* Add safety check for paymentMethod */}
+          <span>{(bill.paymentMethod || 'CASH').toUpperCase()}</span>
         </div>
 
         <div className="text-center mt-4">
@@ -163,12 +173,12 @@ const ThermalPrintTemplate = ({ bill }) => {
         <h2 className="text-center">AL-SHAHBAZ Glasses</h2>
         <p className="text-center">Bill Preview - Click Print to generate thermal print</p>
         <div className="border-bottom mt-2 mb-2"></div>
-        
+
         <div className="flex justify-between">
-          <span>Bill #: {bill._id.slice(-6).toUpperCase()}</span>
-          <span>Total: PKR {bill.totalAmount.toFixed(2)}</span>
+          <span>Bill #: {bill._id?.slice(-6).toUpperCase() || 'N/A'}</span>
+          <span>Total: PKR {(bill.totalAmount || 0).toFixed(2)}</span>
         </div>
-        
+
         <div className="border-bottom mt-2 mb-2"></div>
       </div>
 

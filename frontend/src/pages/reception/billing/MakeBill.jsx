@@ -361,7 +361,7 @@ const filteredBills = billsArray.filter(bill => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-fadeIn">
           <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full">
             <PrintPreviewModal
-              bill={printData}
+              printData={printData}  // Make sure this is printData, not bill
               onClose={() => setShowPrintPreview(false)}
             />
           </div>
