@@ -69,7 +69,7 @@ export default function Inventory() {
         </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2 shadow-sm text-sm font-medium"
+          className="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 flex items-center gap-2 shadow-sm text-sm font-medium"
         >
           + Add Product
         </button>
@@ -113,7 +113,7 @@ export default function Inventory() {
                     {/* Product Info */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 text-blue-600 flex items-center justify-center rounded-md text-xs font-bold">
+                        <div className="w-8 h-8 bg-primary-100 text-primary-600 flex items-center justify-center rounded-md text-xs font-bold">
                           {product.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -124,7 +124,7 @@ export default function Inventory() {
                     </td>
 
                     <td className="px-4 py-3">
-                      <span className="px-2 py-1 rounded-full text-xs bg-blue-50 text-blue-700">
+                      <span className="px-2 py-1 rounded-full text-xs bg-primary-50 text-primary-700">
                         {product.category}
                       </span>
                     </td>
@@ -144,7 +144,7 @@ export default function Inventory() {
                       {product.variants.length > 2 && (
                         <button
                           onClick={() => setViewVariantsProduct(product)}
-                          className="text-xs text-blue-600 mt-1 hover:underline"
+                          className="text-xs text-primary-600 mt-1 hover:underline"
                         >
                           + {product.variants.length - 2} more
                         </button>
@@ -160,7 +160,7 @@ export default function Inventory() {
                     <td className="px-4 py-3 flex gap-2">
                       <button
                         onClick={() => setEditingProduct(product)}
-                        className="text-blue-600 hover:bg-blue-50 p-1 rounded"
+                        className="text-primary-600 hover:bg-primary-50 p-1 rounded"
                       >
                         ✏️
                       </button>
@@ -187,7 +187,7 @@ export default function Inventory() {
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 rounded-md border ${currentPage === i + 1
-                ? "bg-blue-600 text-white border-blue-600"
+                ? "bg-primary-600 text-white border-primary-600"
                 : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
                 }`}
             >
@@ -231,7 +231,7 @@ export default function Inventory() {
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => setViewVariantsProduct(null)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
               >
                 Close
               </button>

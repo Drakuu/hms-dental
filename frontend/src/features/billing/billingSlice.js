@@ -20,16 +20,19 @@ const getAuthHeaders = () => {
 
 // Async thunks for billing
 export const fetchBills = createAsyncThunk(
-   "billing/fetchBills",
-   async (_, { rejectWithValue}) => {
-      try{
+  "billing/fetchBills",
+  async (_, { rejectWithValue }) => {
+    try {
+      // console.log("Making API call to:", `${API_URL}/bills`);
       const response = await axios.get(`${API_URL}/bills`, getAuthHeaders());
-      console.log(response.data);
-      return response.data;
-   } catch (error) {
-      return rejectWithValue(error.response?.data?.message || error.message)
-   }
-});
+      // console.log("API Response:", response.data);
+      return response.data.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
 
 export const addBill = createAsyncThunk(
    "billing/addBill",

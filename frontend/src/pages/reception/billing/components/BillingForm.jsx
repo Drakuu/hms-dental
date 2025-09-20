@@ -10,8 +10,9 @@ import CustomerInfo from "../CustomerInfo";
 import BillItems from "./BillItems";
 import HoldBillsPanel from "./HoldBillsPanel";
 import PrintPreviewModal from "./PrintPreviewModal";
+import { toast } from "react-toastify";
 
-const BillingForm = ({ onClose, editBill }) => {
+const BillingForm = ({ onClose, editBill, onSuccess }) => {
   const dispatch = useDispatch();
   const { items: products, loading: productsLoading } = useSelector(state => state.products);
   const { items: bills, loading: billsLoading } = useSelector(state => state.billing);
@@ -88,7 +89,7 @@ const BillingForm = ({ onClose, editBill }) => {
   // Save bill (either hold or complete)
   const saveBill = async (status = "printed") => {
     if (billItems.length === 0) {
-      alert("Please add at least one product to the bill");
+      toast.info("Please add at least one product to the bill");
       return;
     }
 
@@ -115,14 +116,21 @@ const BillingForm = ({ onClose, editBill }) => {
       }
 
       if (status === "hold") {
-        alert('Bill saved as hold successfully!');
+        toast.success('Bill saved as hold successfully!');
         setBillStatus("hold");
       } else {
-        alert(editBill ? 'Bill updated successfully!' : 'Bill created successfully!');
+        toast.success(editBill ? 'Bill updated successfully!' : 'Bill created successfully!');
+        
+        // Call the onSuccess callback to refresh data in parent
+        if (onSuccess) {
+          onSuccess();
+        }
+
         onClose();
+        
       }
     } catch (error) {
-      alert('Error saving bill: ' + error.message);
+      toast.error('Error saving bill: ' + error.message);
     } finally {
       setIsSaving(false);
     }
@@ -132,13 +140,13 @@ const BillingForm = ({ onClose, editBill }) => {
     <>
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 sticky top-0 z-10">
+        <div className="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 sticky top-0 z-10">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">
                 {editBill ? "Edit Bill" : "Create New Bill"}
               </h1>
-              <p className="text-blue-100">Add products and complete the transaction</p>
+              <p className="text-primary-100">Add products and complete the transaction</p>
             </div>
             <div className="flex items-center space-x-3">
               {billStatus === "hold" && (
@@ -148,7 +156,7 @@ const BillingForm = ({ onClose, editBill }) => {
               )}
               <button
                 onClick={onClose}
-                className="text-white hover:text-blue-200 transition-colors"
+                className="text-white hover:text-primary-200 transition-colors"
               >
                 <X size={28} />
               </button>
@@ -159,15 +167,15 @@ const BillingForm = ({ onClose, editBill }) => {
         <div className="p-6">
           {/* Action Bar */}
           <div className="flex justify-between items-center mb-6">
-            <div className="flex space-x-2">
+            {/* <div className="flex space-x-2">
               <button
                 onClick={() => setShowHoldBills(!showHoldBills)}
-                className="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg flex items-center hover:bg-blue-200 transition-colors"
+                className="bg-primary-100 text-primary-700 px-4 py-2 rounded-lg flex items-center hover:bg-primary-200 transition-colors"
               >
                 <Clock size={18} className="mr-2" />
                 Hold Bills ({holdBills.length})
               </button>
-            </div>
+            </div> */}
             <div className="flex space-x-2">
               {billStatus === "hold" && (
                 <button
@@ -178,14 +186,13 @@ const BillingForm = ({ onClose, editBill }) => {
                   Edit Bill
                 </button>
               )}
-              <button
+              {/* <button
                 onClick={() => saveBill("hold")}
                 disabled={billItems.length === 0 || isSaving}
-                className="bg-amber-100 text-amber-700 px-4 py-2 rounded-lg flex items-center hover:bg-amber-200 transition-colors disabled:opacity-50"
-              >
+                className="bg-amber-100 text-amber-700 px-4 py-2 rounded-lg flex items-center hover:bg-amber-200 transition-colors disabled:opacity-50" >
                 {isSaving ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
                 Hold Bill
-              </button>
+              </button> */}
             </div>
           </div>
 

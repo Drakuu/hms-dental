@@ -173,10 +173,10 @@ const ThermalPrintTemplate = ({ bill }) => {
       </div>
 
       {/* Print Button */}
-      <div className=" outline-red-500 no-print mt-4 text-center">
+      <div className=" outline-red-500 no-print mt-4 text-end">
         <button
           onClick={handlePrint}
-          className="px-4 py-2 bg-blue-900 text-white rounded"
+          className="px-4 py-2 bg-primary-700 text-white rounded"
         >
           Print Bill
         </button>

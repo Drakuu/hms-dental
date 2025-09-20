@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo , useRef} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   DollarSign, ShoppingCart, Clock, Edit3, Trash2, Printer,
@@ -26,9 +26,15 @@ const HoldBill = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showMenuId, setShowMenuId] = useState(null);
 
-  useEffect(() => {
+const hasFetched = useRef(false);
+
+useEffect(() => {
+  if (!hasFetched.current) {
+    console.log("Fetching bills on component mount");
+    hasFetched.current = true;
     dispatch(fetchBills());
-  }, [dispatch]);
+  }
+}, [dispatch]);
 
   // Ensure bills is always an array
   const billsArray = Array.isArray(bills) ? bills : [];
@@ -109,14 +115,14 @@ const HoldBill = () => {
     };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-        <p className="text-gray-600">Loading bills...</p>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center h-screen bg-gray-50">
+  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
+  //       <p className="text-gray-600">Loading bills...</p>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -135,7 +141,7 @@ const HoldBill = () => {
           <p className="text-gray-600 mt-1">View and manage your Hold bills here</p>
         </div>
         <button
-          className="mt-4 md:mt-0 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+          className="mt-4 md:mt-0 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
           onClick={() => {
             setSelectedBill(null);
             setIsAddModalOpen(true);
@@ -151,7 +157,7 @@ const HoldBill = () => {
         <BillSummaryCard
           title="Total Hold Amount"
           value={summary.totalHold}
-          icon={<Clock className="text-blue-600" size={24} />}
+          icon={<Clock className="text-primary-600" size={24} />}
           color="blue"
           formatCurrency
         />
@@ -183,7 +189,7 @@ const HoldBill = () => {
                 <button
                   key={status}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${filterStatus === status
-                    ? "bg-blue-100 text-blue-700 shadow-inner"
+                    ? "bg-primary-100 text-primary-700 shadow-inner"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                     }`}
                   onClick={() => setFilterStatus(status)}
@@ -199,7 +205,7 @@ const HoldBill = () => {
             <input
               type="text"
               placeholder="Search by customer, ID, or payment method..."
-              className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64"
+              className="pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 w-full md:w-64"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -219,7 +225,7 @@ const HoldBill = () => {
             </span>
             <button
               onClick={() => dispatch(fetchBills())}
-              className="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 text-gray-500 hover:text-primary-600 rounded-lg hover:bg-gray-100 transition-colors"
               title="Refresh bills"
             >
               <Loader size={18} />
@@ -240,7 +246,7 @@ const HoldBill = () => {
             </p>
             {!searchQuery && filterStatus === "all" && (
               <button
-                className="mt-4 flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg mx-auto hover:bg-blue-700 transition"
+                className="mt-4 flex items-center gap-2 bg-primary-600 text-white px-4 py-2 rounded-lg mx-auto hover:bg-primary-700 transition"
                 onClick={() => setIsAddModalOpen(true)}
               >
                 <Plus size={18} />
@@ -283,37 +289,11 @@ const HoldBill = () => {
 
       {showPrintPreview && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-4 animate-fadeIn">
-          <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800">Print Preview</h2>
-                <button
-                  onClick={() => setShowPrintPreview(false)}
-                  className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <X size={24} />
-                </button>
-              </div>
-              <ThermalPrintTemplate bill={printData} />
-              <div className="mt-6 flex justify-end gap-3">
-                <button
-                  className="px-5 py-2.5 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors font-medium"
-                  onClick={() => setShowPrintPreview(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium flex items-center"
-                  onClick={() => {
-                    window.print();
-                    setShowPrintPreview(false);
-                  }}
-                >
-                  <Printer size={18} className="mr-2" />
-                  Print Bill
-                </button>
-              </div>
-            </div>
+          <div className="bg-white rounded-2xl shadow-lg max-w-2xl w-full">
+            <ThermalPrintTemplate
+              bill={printData}
+              onClose={() => setShowPrintPreview(false)}
+            />
           </div>
         </div>
       )}
@@ -330,7 +310,7 @@ const BillListItem = ({ bill, onEdit, onDelete, onPrint, onStatusChange, showMen
           <div className="flex items-center gap-3 mb-2">
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${bill.status === "hold" ? "bg-amber-100 text-amber-800" :
               bill.status === "completed" ? "bg-green-100 text-green-800" :
-                bill.status === "printed" ? "bg-blue-100 text-blue-800" :
+                bill.status === "printed" ? "bg-primary-100 text-primary-800" :
                   "bg-gray-100 text-gray-800"
               }`}>
               {bill.status.toUpperCase()}
@@ -364,7 +344,7 @@ const BillListItem = ({ bill, onEdit, onDelete, onPrint, onStatusChange, showMen
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="text-right">
-            <div className="text-xl font-bold text-blue-600">
+            <div className="text-xl font-bold text-primary-600">
               PKR {bill.totalAmount.toFixed(2)}
             </div>
           </div>

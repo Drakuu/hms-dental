@@ -33,7 +33,7 @@ const HoldBillsPanel = ({ holdBills, onLoadBill, onClose }) => {
                         </div>
                         <button
                            onClick={() => onLoadBill(bill)}
-                           className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                           className="bg-primary-600 text-white px-3 py-1 rounded text-sm hover:bg-primary-700"
                         >
                            Load
                         </button>

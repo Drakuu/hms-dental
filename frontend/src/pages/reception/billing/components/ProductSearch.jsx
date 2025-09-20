@@ -1,4 +1,4 @@
-import { Search, Barcode, Plus, AlertTriangle } from "lucide-react";
+import { Search, Barcode, Plus, AlertTriangle ,X} from "lucide-react";
 
 const ProductSearch = ({
    searchInput,
@@ -137,7 +137,7 @@ const ProductSearch = ({
    return (
       <div className="mb-8">
          <form onSubmit={handleSearchSubmit} className="relative">
-            <div className="flex items-center border-2 border-blue-400 rounded-xl overflow-hidden shadow-sm">
+            <div className="flex items-center border-2 border-primary-400 rounded-xl overflow-hidden shadow-sm">
                <div className="pl-4 pr-2 text-gray-500">
                   <Search size={20} />
                </div>
@@ -154,7 +154,7 @@ const ProductSearch = ({
                />
                <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 transition-colors"
+                  className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 transition-colors"
                   disabled={billStatus === "hold"}
                >
                   <Barcode size={20} className="mr-2 inline" />
@@ -169,7 +169,7 @@ const ProductSearch = ({
                {filteredProducts.map((product) => (
                   <div
                      key={product._id}
-                     className="p-3 border-b hover:bg-blue-50 cursor-pointer"
+                     className="p-3 border-b hover:bg-primary-50 cursor-pointer"
                      onMouseDown={() => setSelectedProduct(product)}
                   >
                      <div className="font-semibold">{product.name}</div>
@@ -184,7 +184,7 @@ const ProductSearch = ({
 
          {/* Product Selection Panel */}
          {selectedProduct && (
-            <div className="bg-blue-50 p-4 rounded-xl mt-4 border border-blue-200">
+            <div className="bg-primary-50 p-4 rounded-xl mt-4 border border-primary-200">
                <div className="flex justify-between items-start">
                   <div>
                      <h3 className="text-lg font-semibold">{selectedProduct.name}</h3>
@@ -212,8 +212,8 @@ const ProductSearch = ({
                      <div
                         key={variant._id}
                         className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedVariant?._id === variant._id
-                           ? "border-blue-500 bg-blue-100"
-                           : "border-gray-300 hover:border-blue-300"
+                           ? "border-primary-500 bg-primary-100"
+                           : "border-gray-300 hover:border-primary-300"
                            }`}
                         onClick={() => setSelectedVariant(variant)}
                      >

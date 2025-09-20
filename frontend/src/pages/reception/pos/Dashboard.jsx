@@ -151,7 +151,7 @@ const Dashboard = () => {
   if (billsLoading || productsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
@@ -169,7 +169,7 @@ const Dashboard = () => {
           <div className="flex gap-3">
             <button
               onClick={handleRefresh}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition-colors"
+              className="bg-primary-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-primary-700 transition-colors"
             >
               <RefreshCw size={18} className="mr-2" />
               Refresh Data
@@ -223,8 +223,8 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600">Total Sales</p>
                 <p className="text-2xl font-bold text-gray-900">PKR {summaryStats.totalSales.toFixed(2)}</p>
               </div>
-              <div className="bg-blue-100 p-3 rounded-lg">
-                <DollarSign className="text-blue-600" size={24} />
+              <div className="bg-primary-100 p-3 rounded-lg">
+                <DollarSign className="text-primary-600" size={24} />
               </div>
             </div>
             <div className="mt-2 flex items-center text-sm text-green-600">
@@ -299,7 +299,7 @@ const Dashboard = () => {
                   <p className="text-sm text-gray-600">{product.quantity} units sold</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold">PKR {product.revenue.total(2)}</p>
+                  <p className="font-semibold">PKR {product.revenue.toFixed(2)}</p>
                 </div>
               </div>
             ))}
@@ -320,14 +320,14 @@ const Dashboard = () => {
           </h3>
           <div className="space-y-3">
             {salesByCategory.map((category, index) => (
-              <div key={index} className="p-3 bg-gray-900 rounded-lg">
+              <div key={index} className="p-3 bg-gray-50 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-medium">{category.category}</span>
                   <span className="font-semibold">PKR {category.revenue.toFixed(2)}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-blue-600 h-2 rounded-full"
+                    className="bg-primary-600 h-2 rounded-full"
                     style={{ width: `${Math.min((category.revenue / summaryStats.totalSales) * 100, 100)}%` }}
                   ></div>
                 </div>

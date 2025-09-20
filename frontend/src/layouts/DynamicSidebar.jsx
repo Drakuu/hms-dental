@@ -211,7 +211,7 @@ const DynamicSidebar = ({ userRole, isOpen, toggleSidebar }) => {
           { href: "sale-dashboard", label: "dashboard" },
           { href: "inventory", label: "inventory" },
           { href: "bills", label: "bills" },
-          { href: "hold-bill", label: "hold-bill" },
+          // { href: "hold-bill", label: "hold-bill" },
           { href: "sale-summary", label: "summary" }
         ],
       },

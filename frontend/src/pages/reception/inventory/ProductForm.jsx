@@ -102,7 +102,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., School Shirt, Notebook"
               />
             </div>
@@ -114,7 +114,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                 required
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., Uniform, Stationery"
               />
             </div>
@@ -125,7 +125,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                 type="text"
                 value={formData.brand}
                 onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., Oxford, Pelikan"
               />
             </div>
@@ -138,7 +138,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                 max="100"
                 value={formData.discount}
                 onChange={(e) => setFormData({ ...formData, discount: Number(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="0-100%"
               />
             </div>
@@ -149,7 +149,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               rows={3}
               placeholder="Product description and details..."
             />
@@ -162,7 +162,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
               <button
                 type="button"
                 onClick={handleAddVariant}
-                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                className="flex items-center gap-1 text-primary-600 hover:text-primary-800 text-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -194,7 +194,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                         type="text"
                         value={variant.size}
                         onChange={(e) => handleVariantChange(index, 'size', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                         placeholder="S, M, L, XL"
                       />
                     </div>
@@ -205,7 +205,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                         type="text"
                         value={variant.color}
                         onChange={(e) => handleVariantChange(index, 'color', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                         placeholder="Red, Blue, Green"
                       />
                     </div>
@@ -217,7 +217,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                         required
                         value={variant.barcode}
                         onChange={(e) => handleVariantChange(index, 'barcode', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                         placeholder="Unique barcode number"
                       />
                     </div>
@@ -229,7 +229,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                         min="0"
                         value={variant.stock}
                         onChange={(e) => handleVariantChange(index, 'stock', Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
 
@@ -242,7 +242,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                         required
                         value={variant.buyingPrice}
                         onChange={(e) => handleVariantChange(index, 'buyingPrice', Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
 
@@ -255,7 +255,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
                         required
                         value={variant.sellingPrice}
                         onChange={(e) => handleVariantChange(index, 'sellingPrice', Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       />
                     </div>
                   </div>
@@ -276,7 +276,7 @@ export default function ProductForm({ mode, product, onClose, onSave }) {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors flex items-center gap-2"
               disabled={loading}
             >
               {loading ? (

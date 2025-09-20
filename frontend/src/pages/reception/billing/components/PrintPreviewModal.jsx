@@ -4,7 +4,7 @@ import ThermalPrintTemplate from "../../pos/components/ThermalPrintTemplate";
 const PrintPreviewModal = ({ printData, onClose }) => {
    return (
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-         <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+         <div className="bg-white rounded-xl shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
                <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold text-gray-800">Print Preview</h2>
@@ -16,24 +16,6 @@ const PrintPreviewModal = ({ printData, onClose }) => {
                   </button>
                </div>
                <ThermalPrintTemplate bill={printData} />
-               <div className="mt-6 flex justify-end gap-3">
-                  <button
-                     className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
-                     onClick={onClose}
-                  >
-                     Cancel
-                  </button>
-                  <button
-                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-                     onClick={() => {
-                        window.print();
-                        onClose();
-                     }}
-                  >
-                     <Printer size={18} className="mr-2" />
-                     Print Bill
-                  </button>
-               </div>
             </div>
          </div>
       </div>

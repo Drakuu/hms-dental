@@ -13,7 +13,7 @@ const BillItems = ({
    onClose,
    onPrint,
    onSaveBill,
-   isSaving
+   isSaving,
 }) => {
 
    // Update item fields
@@ -65,7 +65,7 @@ const BillItems = ({
             <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                <h3 className="text-lg font-semibold flex items-center">
                   <ShoppingCart size={20} className="mr-2" />
-                  Bill Items {billItems.length > 0 && <span className="text-blue-600 ml-2">({billItems.length})</span>}
+                  Bill Items {billItems.length > 0 && <span className="text-primary-600 ml-2">({billItems.length})</span>}
                </h3>
             </div>
 
@@ -78,7 +78,7 @@ const BillItems = ({
             ) : (
                <div className="divide-y divide-gray-200">
                   {billItems.map((item, idx) => (
-                     <div key={idx} className="p-4 flex items-center hover:bg-blue-50 transition-colors">
+                     <div key={idx} className="p-4 flex items-center hover:bg-primary-50 transition-colors">
                         <div className="flex-1">
                            <div className="font-medium">{item.name}</div>
                            <div className="text-sm text-gray-600">
@@ -192,7 +192,7 @@ const BillItems = ({
 
                   <div className="border-t border-gray-300 pt-2 mt-2 font-bold text-lg flex justify-between">
                      <span>Net Total:</span>
-                     <span className="text-blue-700">PKR {netTotal.toFixed(2)}</span>
+                     <span className="text-primary-700">PKR {netTotal.toFixed(2)}</span>
                   </div>
                </div>
 
@@ -204,18 +204,18 @@ const BillItems = ({
                      Cancel
                   </button>
 
-                  <button
+                  {/* <button
                      onClick={() => onSaveBill("hold")}
                      disabled={isSaving}
                      className="px-6 py-3 bg-amber-100 text-amber-700 rounded-xl hover:bg-amber-200 transition-colors font-medium flex items-center disabled:opacity-50"
                   >
                      {isSaving ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
                      Hold Bill
-                  </button>
+                  </button> */}
 
                   <button
                      onClick={onPrint}
-                     className="px-6 py-3 bg-blue-600 text-white rounded-xl shadow hover:bg-blue-700 transition-colors font-medium flex items-center"
+                     className="px-6 py-3 bg-primary-600 text-white rounded-xl shadow hover:bg-primary-700 transition-colors font-medium flex items-center"
                   >
                      <Printer size={18} className="mr-2" />
                      Print Preview
